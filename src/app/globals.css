@@ -1,0 +1,155 @@
+@import "tailwindcss";
+
+@theme {
+  /* Page shell — the deep ink-teal that shows through every rounded corner */
+  --color-page: #0c1618;
+
+  /* Panel tones */
+  --color-panel: #0a0f10;
+  --color-panel-soft: #101819;
+  --color-paper: #f5f3ee;
+
+  /* Ink */
+  --color-ink: #eef2f0;
+  --color-ink-dim: #93a5a4;
+  --color-ink-faint: #5d6f70;
+  --color-ink-dark: #0b1112;
+  --color-ink-dark-dim: #5b6a6b;
+
+  /* Accents */
+  --color-gold: #d9a441;
+  --color-gold-soft: #e8c483;
+  --color-verdigris: #5fd0b6;
+  --color-verdigris-deep: #2f7f70;
+
+  --color-hairline: #1e2b2c;
+  --color-hairline-light: #ddd8ce;
+
+  --radius-panel: 28px;
+  --radius-panel-lg: 44px;
+
+  --font-display: var(--font-outfit), "Segoe UI", system-ui, sans-serif;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    background-color: var(--color-page);
+  }
+
+  body {
+    background-color: var(--color-page);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-gold);
+    color: var(--color-ink-dark);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-verdigris);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+}
+
+@layer components {
+  /*
+   * Stacked rounded panels — the core mechanic of the reference walkthroughs.
+   * Every section pins to the top of the viewport while the *next* panel
+   * scrolls up over it, so the page background stays visible at the rounded
+   * corners and sections read as cards being dealt rather than a page jumping.
+   *
+   * Sticky stacking needs each panel to be roughly one viewport tall, which
+   * only holds from md upward. Below that the panels fall back to normal flow
+   * with a small negative overlap, which keeps the same "dealt card" look
+   * without trapping content off-screen.
+   */
+  .stack-item {
+    margin-top: -1.75rem;
+  }
+
+  .stack-item:first-child {
+    margin-top: 0;
+  }
+
+  @media (min-width: 768px) {
+    .stack-item {
+      position: sticky;
+      top: 0;
+      margin-top: 0;
+    }
+
+    /*
+     * Set by StackFit on any panel taller than the viewport. Pinning such a
+     * panel would strand its lower half off-screen, so it returns to normal
+     * flow — it still scrolls up over the panel pinned behind it.
+     */
+    .stack-item[data-tall="true"] {
+      position: relative;
+    }
+  }
+
+  .rule-dark {
+    border-bottom: 1px solid color-mix(in srgb, #eef2f0 14%, transparent);
+  }
+
+  .rule-light {
+    border-bottom: 1px solid var(--color-hairline-light);
+  }
+}
+
+@layer utilities {
+  /* Continuous horizontal marquee for the partner logo band */
+  .animate-marquee {
+    animation: marquee 42s linear infinite;
+  }
+
+  @keyframes marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* Ambient drift applied to the generative gradient art */
+  .animate-drift {
+    animation: drift 24s ease-in-out infinite alternate;
+  }
+
+  @keyframes drift {
+    from {
+      transform: scale(1.06) translate3d(-1.5%, -1%, 0);
+    }
+    to {
+      transform: scale(1.14) translate3d(1.5%, 1.5%, 0);
+    }
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-marquee,
+  .animate-drift {
+    animation: none !important;
+  }
+}
