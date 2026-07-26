@@ -32,20 +32,36 @@ export function Panel({
   full?: boolean;
 }) {
   return (
-    <section id={id} className="stack-item" style={{ zIndex: index }}>
-      <div
-        className={[
-          "relative overflow-hidden",
-          "rounded-[var(--radius-panel)] md:rounded-[var(--radius-panel-lg)]",
-          full ? "md:min-h-svh" : "",
-          "flex flex-col justify-center",
-          TONE[tone],
-          className ?? "",
-        ].join(" ")}
+    <>
+      {/*
+       * Anchor target, deliberately a zero-height sibling rather than an id on
+       * the panel itself. Every sticky panel shares <main> as its containing
+       * block, so once a panel has been scrolled past it stays stuck and
+       * reports top:0 forever — anchor navigation to it would conclude it is
+       * already in view and refuse to scroll, making the nav one-way. This
+       * marker stays in normal flow at the panel's true position.
+       */}
+      {id ? <div id={id} aria-hidden="true" className="h-0" /> : null}
+
+      <section
+        className="stack-item"
+        data-panel={id}
+        style={{ zIndex: index }}
       >
-        {children}
-      </div>
-    </section>
+        <div
+          className={[
+            "relative overflow-hidden",
+            "rounded-[var(--radius-panel)] md:rounded-[var(--radius-panel-lg)]",
+            full ? "md:min-h-svh" : "",
+            "flex flex-col justify-center",
+            TONE[tone],
+            className ?? "",
+          ].join(" ")}
+        >
+          {children}
+        </div>
+      </section>
+    </>
   );
 }
 

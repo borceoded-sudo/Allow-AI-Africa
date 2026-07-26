@@ -108,15 +108,23 @@ export function DotMatrix({
   variant,
   tone = "dark",
   className,
+  idPrefix = "dm",
 }: {
   seed: number;
   variant?: Variant;
   tone?: "dark" | "light";
   className?: string;
+  /**
+   * Namespaces the gradient ids. Required whenever the same seed+variant is
+   * rendered more than once on a page (Technology shows each item as both a
+   * list icon and the large preview) — duplicate ids are invalid and leave the
+   * second instance referencing the first one's gradients.
+   */
+  idPrefix?: string;
 }) {
   const resolved = variant ?? VARIANTS[seed % VARIANTS.length];
   const dots = buildDots(seed, resolved);
-  const id = `dm-${seed}-${resolved}`;
+  const id = `${idPrefix}-${seed}-${resolved}-${tone}`;
   const dotColor = tone === "dark" ? "#8fd7c6" : "#e8f2ee";
 
   return (

@@ -74,6 +74,7 @@ export function Technology({ index }: { index: number }) {
                             <DotMatrix
                               seed={item.seed}
                               variant={variantForIndex(i)}
+                              idPrefix="dm-tab"
                               className="h-full w-full"
                             />
                           </span>

@@ -74,7 +74,9 @@
     margin-top: -1.75rem;
   }
 
-  .stack-item:first-child {
+  /* :first-of-type, not :first-child — each panel is preceded by a zero-height
+     anchor marker, so the first panel is never the first child. */
+  .stack-item:first-of-type {
     margin-top: 0;
   }
 

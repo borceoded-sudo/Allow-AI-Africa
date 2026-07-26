@@ -83,7 +83,10 @@ export function Faq({ index }: { index: number }) {
                       aria-controls={`faq-answer-${category}-${i}`}
                       className="group flex w-full items-center gap-5 py-5 text-left"
                     >
-                      <span className="text-ink-faint w-7 shrink-0 font-sans text-[12px] tabular-nums">
+                      <span
+                        aria-hidden="true"
+                        className="text-ink-faint w-7 shrink-0 font-sans text-[12px] tabular-nums"
+                      >
                         {String(i + 1).padStart(2, "0")}.
                       </span>
 

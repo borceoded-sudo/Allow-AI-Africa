@@ -42,7 +42,10 @@ export function Voices({ index }: { index: number }) {
 
   return (
     <Panel id="voices" index={index} tone="paper" className="!justify-between">
-      <div className="mx-auto w-full max-w-[1180px] px-6 pt-16 pb-10 sm:px-10 md:pt-20 lg:px-14">
+      {/* flex-1 + items-center keeps the quote optically centred in whatever
+          space the marquee leaves, instead of pooling it all above the band. */}
+      <div className="flex flex-1 items-center">
+        <div className="mx-auto w-full max-w-[1180px] px-6 py-14 sm:px-10 lg:px-14">
         <div className="grid gap-10 md:grid-cols-[0.95fr_1.05fr] md:gap-16">
           <div>
             <Reveal>
@@ -134,6 +137,7 @@ export function Voices({ index }: { index: number }) {
               </AnimatePresence>
             </figure>
           </Reveal>
+          </div>
         </div>
       </div>
 

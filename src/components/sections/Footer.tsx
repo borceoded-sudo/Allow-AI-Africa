@@ -64,6 +64,7 @@ export function Footer({ index }: { index: number }) {
                   <input
                     name="company_website"
                     type="text"
+                    aria-label="Leave this field empty"
                     tabIndex={-1}
                     autoComplete="off"
                   />
