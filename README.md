@@ -36,15 +36,39 @@ instead of failing silently.
 ## Supabase setup
 
 1. Create a project at [supabase.com](https://supabase.com).
-2. Run `supabase/migrations/0001_init.sql` in the SQL editor (or
-   `supabase db push` with the CLI).
-3. Copy the project URL and keys into `.env.local`:
+2. Apply the schema, either way round:
 
-```bash
-NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=...
-SUPABASE_SERVICE_ROLE_KEY=...   # optional, server-only
-```
+   ```bash
+   supabase link --project-ref <your-project-ref>
+   supabase db push
+   ```
+
+   or paste `supabase/migrations/0001_init.sql` into the SQL editor.
+3. Put the project URL and keys in `.env.local` (gitignored):
+
+   ```bash
+   NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=...
+   SUPABASE_SERVICE_ROLE_KEY=...   # optional, server-only
+   ```
+
+4. Confirm the wiring:
+
+   ```bash
+   npm run supabase:check              # connectivity, schema, RLS posture
+   npm run supabase:check -- --write   # plus a full insert round-trip
+   ```
+
+   The read-only run is safe against a live project. `--write` inserts marked
+   rows and deletes them again using the service role; without that key it
+   tells you which rows to remove by hand.
+
+   The check verifies the security property that matters most: that the anon
+   key can insert but **cannot read back** what anyone has submitted. It fails
+   loudly if a `SELECT` policy has crept in. It also refuses to report anything
+   below connectivity if the project is unreachable — a transport error has no
+   Postgres error code, and treating one as "the database refused me" would
+   report a broken connection as healthy RLS.
 
 ### Data model
 
@@ -155,6 +179,22 @@ deploys to Vercel unchanged.
 Nothing here is Vercel-specific beyond `VERCEL_ENV`/`VERCEL_URL` detection, so
 any Node host that runs `next build && next start` works; set
 `NEXT_PUBLIC_SITE_URL` explicitly there.
+
+## Continuous integration
+
+`docs/github-actions-ci.yml` runs typecheck, lint, the unit tests and the
+end-to-end suite on every push. Copy it into place to enable it:
+
+```bash
+mkdir -p .github/workflows
+cp docs/github-actions-ci.yml .github/workflows/ci.yml
+```
+
+It ships outside `.github/workflows` because creating files there requires a
+token with the GitHub `workflow` scope, which the branch push did not have.
+
+The e2e job runs with no Supabase credentials on purpose — that is the state a
+first deploy is in, and the site must build and serve without them.
 
 ## Content
 

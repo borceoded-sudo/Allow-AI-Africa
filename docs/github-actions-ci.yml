@@ -1,0 +1,59 @@
+# Continuous integration for Allow AI Africa.
+#
+# Copy this file to .github/workflows/ci.yml to enable it. It lives here
+# because the token used to push this branch lacks the GitHub `workflow`
+# scope, which is required to create files under .github/workflows.
+#
+#   mkdir -p .github/workflows
+#   cp docs/github-actions-ci.yml .github/workflows/ci.yml
+#
+name: CI
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Unit tests
+        run: npm test
+
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # Deliberately runs with no Supabase credentials: this is the state a
+      # first deploy is in, and the site must build and serve without them.
+      - name: End-to-end tests
+        run: npm run test:e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7

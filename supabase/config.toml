@@ -1,0 +1,29 @@
+# Supabase CLI project config.
+#
+#   supabase link --project-ref <your-project-ref>
+#   supabase db push        # applies supabase/migrations/*.sql
+#
+# Only the settings this project actually relies on are listed. Everything else
+# stays at the CLI's defaults.
+
+project_id = "allow-ai-africa"
+
+[db]
+# Match the Postgres major version of your hosted project, so a local
+# `supabase start` reproduces production behaviour.
+major_version = 15
+
+[db.migrations]
+schema_paths = []
+
+[auth]
+# The site has no sign-in. Nothing in the app reads an auth session — the two
+# forms write through insert-only RLS policies for the anon role.
+enabled = false
+
+[storage]
+# No uploads: every asset on the page is generated in code.
+enabled = false
+
+[realtime]
+enabled = false
