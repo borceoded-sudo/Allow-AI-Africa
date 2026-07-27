@@ -165,11 +165,45 @@ real material before launch.
 ## Scripts
 
 ```bash
-npm run dev     # dev server
-npm run build   # production build (also runs TypeScript)
-npm start       # serve the production build
-npm run lint    # eslint
+npm run dev        # dev server
+npm run build      # production build (also runs TypeScript)
+npm start          # serve the production build
+npm run typecheck  # tsc --noEmit
+npm run lint       # eslint
+npm test           # unit tests (Node's built-in runner, no extra deps)
+npm run test:e2e   # Playwright end-to-end suite
+npm run test:all   # everything above, in order
 ```
+
+## Tests
+
+**Unit** (`tests/unit`, 27 tests) run on Node's native test runner and type
+stripping — no Jest, no Vitest, no transform step. They cover the validation
+schemas (including that the honeypot stays *outside* them), the seeded PRNG's
+determinism, the artwork variant cycling, and canonical-URL resolution across
+production and preview environments.
+
+**End-to-end** (`tests/e2e`, 18 tests) run against a real production build,
+because the security headers, the static `robots.txt`/`sitemap.xml` routes and
+the genuine 404 status only exist there. They cover the panel stack, both
+carousels, the technology selector, the FAQ accordion, the testimonial
+swapper, the mega-menu, anchor navigation in both directions, the contact and
+newsletter forms, and a small accessibility audit.
+
+Two things about testing this layout are worth knowing before editing the
+suite, both of which cost real debugging time:
+
+- **`offsetTop` reflects the sticky shift in Chrome.** A panel already scrolled
+  past reports the wrong position, so `scrollToPanel` resets to 0 before
+  measuring.
+- **Playwright's auto scroll-into-view fights sticky panels.** It moves the
+  page off the panel's pinned position, where the next panel covers the target,
+  so in-panel controls are clicked at real coordinates via `clickAt`.
+
+The viewport is pinned to 1440x900 inside the project's `use` block. It has to
+be set there rather than globally: project-level `use` overrides the global
+one, and the `Desktop Chrome` preset carries its own 1280x720 viewport — at
+which the Solutions carousel arrows fall below the fold.
 
 ## Accessibility & motion
 

@@ -1,16 +1,8 @@
 import { mulberry32 } from "@/lib/rng";
+import { VARIANTS, variantForIndex, type Variant } from "@/lib/artVariants";
 
-export type Variant = "grid" | "spiral" | "wave" | "lattice";
-
-const VARIANTS: Variant[] = ["grid", "spiral", "wave", "lattice"];
-
-/**
- * Cycles the four variants across a set so neighbouring cards never share a
- * pattern — seeds alone bunch up, which made the earlier cards look identical.
- */
-export function variantForIndex(i: number): Variant {
-  return VARIANTS[i % VARIANTS.length];
-}
+// Re-exported so call sites can keep importing both from the component.
+export { variantForIndex, type Variant };
 
 type Dot = { cx: number; cy: number; r: number; o: number };
 
