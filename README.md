@@ -139,6 +139,9 @@ fire. `LineReveal` does this with variants.
 
 ## Deploying
 
+**See [`docs/DEPLOY.md`](docs/DEPLOY.md)** for the full runbook with this
+project's Supabase ref and Vercel scope already filled in.
+
 The site is a standard Next.js App Router app with no custom server, so it
 deploys to Vercel unchanged.
 
