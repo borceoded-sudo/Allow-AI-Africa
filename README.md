@@ -113,6 +113,49 @@ Motion note: reveals that translate an element out of its own
 an observer on the moved child measures zero intersection and would never
 fire. `LineReveal` does this with variants.
 
+## Deploying
+
+The site is a standard Next.js App Router app with no custom server, so it
+deploys to Vercel unchanged.
+
+1. **Import the repo** at [vercel.com/new](https://vercel.com/new) and pick the
+   `claude/allow-ai-africa-nextjs-mnwjfw` branch (or merge it first). Vercel
+   detects Next.js — no build settings to change.
+2. **Add environment variables** in *Settings → Environment Variables*:
+
+   | Variable | Scope | Required |
+   |---|---|---|
+   | `NEXT_PUBLIC_SUPABASE_URL` | all | for the forms |
+   | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | all | for the forms |
+   | `SUPABASE_SERVICE_ROLE_KEY` | all | recommended, server-only |
+   | `NEXT_PUBLIC_SITE_URL` | production | recommended |
+
+   The first deploy succeeds with none of these set — the page renders and the
+   forms report that the backend is not configured. Add them and redeploy when
+   the Supabase project is ready.
+3. **Run the migration** (`supabase/migrations/0001_init.sql`) against your
+   Supabase project before pointing real traffic at the forms.
+4. **Set `NEXT_PUBLIC_SITE_URL`** to the final domain once DNS is attached, so
+   the canonical URL, Open Graph tags and sitemap all agree.
+
+### What the deployment already handles
+
+- **Security headers** are set in `next.config.ts` for every route
+  (`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options`,
+  `Permissions-Policy`, HSTS), and `X-Powered-By` is suppressed. The policy can
+  be strict because the page loads no third-party script, iframe or remote
+  asset — the artwork is generated in code and next/font self-hosts the fonts.
+- **Preview deployments exclude themselves from search.** On any non-production
+  Vercel environment `robots.txt` returns `Disallow: /` and the page carries
+  `noindex, nofollow`, and the canonical URL falls back to the deployment's own
+  `VERCEL_URL` rather than advertising the production domain.
+- **`robots.txt` and `sitemap.xml`** are generated as static routes.
+- **A branded 404** replaces the framework default.
+
+Nothing here is Vercel-specific beyond `VERCEL_ENV`/`VERCEL_URL` detection, so
+any Node host that runs `next build && next start` works; set
+`NEXT_PUBLIC_SITE_URL` explicitly there.
+
 ## Content
 
 All copy lives in `src/lib/content.ts`. Organisations, people, metrics and

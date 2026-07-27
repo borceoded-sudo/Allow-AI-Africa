@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, Outfit } from "next/font/google";
+import { getSiteUrl, isProduction } from "@/lib/siteUrl";
 import "./globals.css";
 
 const outfit = Outfit({
@@ -14,7 +15,7 @@ const inter = Inter({
   display: "swap",
 });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "https://allowai.africa";
+const siteUrl = getSiteUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -32,6 +33,11 @@ export const metadata: Metadata = {
     "African languages NLP",
     "data infrastructure",
   ],
+  alternates: { canonical: "/" },
+  // Preview deployments must never outrank the real site.
+  robots: isProduction()
+    ? { index: true, follow: true }
+    : { index: false, follow: false },
   openGraph: {
     type: "website",
     url: siteUrl,
